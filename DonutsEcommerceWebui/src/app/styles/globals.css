@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: theme("colors.primary");
+  }
+  * {
+    margin: 0px;
+    padding: 0px;
+  }
+}
+
+@font-face {
+  font-family: "Fredoka";
+  src: url("../../../public/fonts/FredokaOne-Regular.otf");
+  font-weight: normal;
+  font-style: normal;
+}

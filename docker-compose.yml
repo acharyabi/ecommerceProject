@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: everdonuts-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_DATABASE:-everdonuts}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - everdonuts-network
+
+  api:
+    build:
+      context: ./DonutsEcommerceapi
+      dockerfile: Dockerfile
+    container_name: everdonuts-api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: ${DB_DATABASE:-everdonuts}
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    volumes:
+      - ./DonutsEcommerceapi/imageUploads:/app/imageUploads
+      - /app/node_modules
+      - ./imageUploads:/app/imageUploads
+    networks:
+      - everdonuts-network
+
+  admin:
+    build:
+      context: ./DonutsEcommerceAdmin
+      dockerfile: Dockerfile
+    container_name: everdonuts-admin
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3002:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./DonutsEcommerceAdmin:/app
+      - /app/node_modules
+    networks:
+      - everdonuts-network
+
+  webui:
+    build:
+      context: ./DonutsEcommerceWebui
+      dockerfile: Dockerfile
+    container_name: everdonuts-webui
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./DonutsEcommerceWebui:/app
+      - /app/node_modules
+    networks:
+      - everdonuts-network
+
+networks:
+  everdonuts-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

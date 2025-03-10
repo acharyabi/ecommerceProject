@@ -1,0 +1,16 @@
+.navitem::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary);
+  left: 0;
+  bottom: -2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease-out;
+}
+
+.navitem:hover::after {
+  transform: scaleX(1);
+}

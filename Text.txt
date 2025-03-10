@@ -1,0 +1,4 @@
+Create new key pair
+- Name: everdonuts-keypair
+- Type: RSA
+- Format: .pem (for OpenSSH) or .ppk (for PuTTY)
