@@ -1,21 +1,25 @@
-FROM node:18
+# Use a more lightweight base image
+FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and yarn.lock
+# Install necessary build dependencies
+RUN apk add --no-cache python3 make g++
+
+# Copy package files
 COPY package.json yarn.lock ./
 
-# Install dependencies using yarn with flags to ignore formatting issues
-RUN yarn install --network-timeout 600000 --no-strict-ssl
+# Install dependencies and clean up in the same layer
+RUN yarn install --network-timeout 600000 --no-strict-ssl \
+    && yarn cache clean \
+    && rm -rf /root/.npm /root/.node-gyp
 
-# Copy the rest of the application code
+# Copy application code
 COPY . .
 
-# Build the application
-# RUN yarn build
+# Expose port
+EXPOSE 3000
 
-# Expose the port the app runs on
-EXPOSE 3001
-
-# Command to run the application
-CMD ["yarn", "start:dev"]
+# Command to run the application in development mode
+CMD ["yarn", "dev"]
